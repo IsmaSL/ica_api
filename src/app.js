@@ -10,9 +10,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/ping', async (req, res) => {
-    const [result] = await pool.query(`SELECT "Hello world" as RESULT`);
-    res.json(result[0]);
-    console.log(result[0]);
+    const [result] = await pool.query(`SELECT "hello world" as RESULT`);
+    res.json(result[0])
 })
 
 app.get('/all-users', async (req, res) => {
@@ -23,7 +22,6 @@ app.get('/all-users', async (req, res) => {
 app.get('/addUser', async (req, res) => {
     const result = await pool.query('INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES ()');
 })
-
 
 // Da un puerto
 app.listen(PORT)
