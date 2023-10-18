@@ -46,8 +46,8 @@ app.get('/all-users', async (req, res) => {
 app.post('/add-user', async (req, res) => {
     const { email, password, url_img, name, last_name, phone, role } = req.body;
 
-    if (!email || !password || !url_img || !name || !last_name || !phone || !role) {
-        return res.status(400).send({ error: 'Faltan datos de usuario o contraseña' });
+    if (!email || !password || !name || !last_name || !phone || !role) {
+        return res.status(400).send({ error: 'Faltan datos para el registro.' });
     }
 
     // Encriptar la contraseña
