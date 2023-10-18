@@ -43,8 +43,26 @@ app.get('/all-users', async (req, res) => {
     res.json(rows);
 })
 
-app.get('/addUser', async (req, res) => {
-    const result = await pool.query('INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES ()');
+app.post('/add-user', async (req, res) => {
+    const { email, password, url_img, name, last_name, phone, role } = req.body;
+
+    if (!email || !password || !url_img || !name || !last_name || !phone || !role) {
+        return res.status(400).send({ error: 'Faltan datos de usuario o contraseña' });
+    }
+
+    // Encriptar la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    try {
+        await pool.query(
+            'INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            [email, hashedPassword, url_img, name, last_name, phone, role]
+        );
+        res.status(201).send({ message: 'Usuario registrado con éxito' });
+    } catch (error) {
+        res.status(500).send({ error: 'Error al registrar el usuario' });
+    }
 })
 
 // Da un puerto
