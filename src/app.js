@@ -9,7 +9,7 @@ import cors from 'cors';
 const app = express()
 
 // Configura CORS
-const whitelist = ['http://localhost:4200', 'https://ica-demo-app.netlify.app/'];
+const whitelist = ['http://localhost:4200', 'https://ica-demo-app.netlify.app'];
 
 const corsOptions = {
     origin: function (origin, callback) {
