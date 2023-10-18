@@ -22,7 +22,7 @@ app.post('/login', async (req, res) => {
 
     const [rows] = await pool.query('SELECT * FROM users WHERE correo = ?', [username]);
     if (rows.length === 0) {
-        return res.status(401).send({ error: 'Usuario o contraseña incorrectos' });
+        return res.status(401).send({ error: 'Usuario no encontrado.' });
     }
 
     const user = rows[0];
