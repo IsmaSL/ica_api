@@ -26,8 +26,12 @@ app.post('/login', async (req, res) => {
     }
 
     const user = rows[0];
+
+    if (!password || !user.contraseña) {
+        return res.status(401).send({ error: 'Contraseña incorrectos' });
+    }
     
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.contraseña);
     if (!match) {
         return res.status(401).send({ error: 'Usuario o contraseña incorrectos' });
     }
