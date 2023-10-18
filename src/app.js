@@ -1,11 +1,21 @@
 import express from "express";
 import { pool } from "./database.js";
-import { PORT } from "./config.js";
+import { PORT, PW_TOKEN, OG_CORS } from "./config.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import cors from 'cors';
 
 // Inicializa express
 const app = express()
+
+// Configura CORS
+const corsOptions = {
+    origin: OG_CORS , // Cambia esto al dominio de tu frontend si es diferente
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // Permite cookies
+    optionsSuccessStatus: 204
+  };
+app.use(cors(corsOptions));
 
 app.use(express.json()); // Para poder recibir datos JSON en el body
 
@@ -20,7 +30,7 @@ app.post('/login', async (req, res) => {
         return res.status(400).send({ error: 'Faltan datos de usuario o contraseña' });
     }
 
-    const [rows] = await pool.query('SELECT * FROM users WHERE correo = ?', [username]);
+    const [rows] = await pool.query('SELECT correo, url_img, nombre, apellidos, telefono, rol FROM users WHERE correo = ?', [username]);
     if (rows.length === 0) {
         return res.status(401).send({ error: 'Usuario no encontrado.' });
     }
@@ -37,7 +47,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Aquí puedes usar JWT para generar un token y enviarlo al cliente si así lo prefieres.
-    const token = jwt.sign({ userId: user.correo }, 'batichico', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.correo }, PW_TOKEN, { expiresIn: '1h' });
 
     res.send({ user, token });
 });
