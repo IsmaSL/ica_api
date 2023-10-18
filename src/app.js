@@ -37,7 +37,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Aquí puedes usar JWT para generar un token y enviarlo al cliente si así lo prefieres.
-    const token = jwt.sign({ userId: user.id }, 'batichico', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.correo }, 'batichico', { expiresIn: '1h' });
 
     res.send({ user, token });
 });
