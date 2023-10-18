@@ -9,12 +9,20 @@ import cors from 'cors';
 const app = express()
 
 // Configura CORS
+const whitelist = ['http://localhost:4200', 'https://ica-demo-app.netlify.app/'];
+
 const corsOptions = {
-    origin: OG_CORS , // Cambia esto al dominio de tu frontend si es diferente
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // Permite cookies
     optionsSuccessStatus: 204
-  };
+};
 app.use(cors(corsOptions));
 
 app.use(express.json()); // Para poder recibir datos JSON en el body
@@ -40,7 +48,7 @@ app.post('/login', async (req, res) => {
     if (!password || !user.contraseña) {
         return res.status(401).send({ error: 'Contraseña incorrectos' });
     }
-    
+
     const match = await bcrypt.compare(password, user.contraseña);
     if (!match) {
         return res.status(401).send({ error: 'Usuario o contraseña incorrectos' });
@@ -70,7 +78,7 @@ app.post('/add-user', async (req, res) => {
 
     try {
         await pool.query(
-            'INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            'INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [email, hashedPassword, url_img, name, last_name, phone, role]
         );
         res.status(201).send({ message: 'Usuario registrado con éxito' });
