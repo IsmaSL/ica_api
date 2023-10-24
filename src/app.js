@@ -61,8 +61,11 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/all-users', async (req, res) => {
+    const currentUser = req.query.current_user; // Obtiene el correo del usuario actual de la URL   
+
     const [rows] = await pool.query('SELECT * FROM users;');
-    res.json(rows);
+    const filteredRows = rows.filter(row => row.correo !== currentUser);
+    res.json(filteredRows);
 })
 
 app.post('/add-user', async (req, res) => {
@@ -77,15 +80,34 @@ app.post('/add-user', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     try {
+        const status = 1;
         await pool.query(
-            'INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [email, hashedPassword, url_img, name, last_name, phone, role]
+            'INSERT INTO users (correo, contraseña, url_img, nombre, apellidos, telefono, rol, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [email, hashedPassword, url_img, name, last_name, phone, role, status]
         );
         res.status(201).send({ message: 'Usuario registrado con éxito' });
     } catch (error) {
         res.status(500).send({ error: 'Error al registrar el usuario' });
     }
-})
+});
+
+app.patch('/update-user-status', async (req, res) => {
+    const { email, newStatus } = req.body;
+
+    if (!email || newStatus === undefined) {
+        return res.status(400).send({ error: 'Faltan datos para actualizar el estado del usuario.' });
+    }
+
+    try {
+        await pool.query(
+            'UPDATE users SET status = ? WHERE correo = ?',
+            [newStatus, email]
+        );
+        res.status(200).send({ message: 'Estado del usuario actualizado con éxito' });
+    } catch (error) {
+        res.status(500).send({ error: 'Error al actualizar el estado del usuario' });
+    }
+});
 
 // Da un puerto
 app.listen(PORT)
