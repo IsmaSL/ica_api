@@ -49,6 +49,10 @@ app.post('/login', async (req, res) => {
         return res.status(401).send({ error: 'Contraseña incorrectos' });
     }
 
+    if (user.status !== 1) {
+        return res.status(401).send({ error: 'Tu cuenta ha sido suspendida.' });
+    }
+
     const match = await bcrypt.compare(password, user.contraseña);
     if (!match) {
         return res.status(401).send({ error: 'Usuario o contraseña incorrectos' });
