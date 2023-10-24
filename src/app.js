@@ -70,7 +70,30 @@ app.get('/all-users', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM users;');
     const filteredRows = rows.filter(row => row.correo !== currentUser);
     res.json(filteredRows);
-})
+});
+
+app.get('/all-requests', async (req, res) => {
+    const [rows] = await pool.query(`SELECT * FROM requests WHERE status = '0' ORDER BY request_date ASC;`);
+    res.json(rows);
+});
+
+app.patch('/update-request-status', async (req, res) => {
+    const { email, newStatus } = req.body;
+
+    if (!email || newStatus === undefined) {
+        return res.status(400).send({ error: 'Faltan datos para actualizar el estado de la solicitud.' });
+    }
+
+    try {
+        await pool.query(
+            'UPDATE request SET status = ? WHERE email = ?',
+            [newStatus, email]
+        );
+        res.status(200).send({ message: 'Estado de la solicitud actualizado con éxito' });
+    } catch (error) {
+        res.status(500).send({ error: 'Error al actualizar estado de la solicitud' });
+    }
+});
 
 app.post('/add-user', async (req, res) => {
     const { email, password, url_img, name, last_name, phone, role } = req.body;
@@ -110,6 +133,26 @@ app.patch('/update-user-status', async (req, res) => {
         res.status(200).send({ message: 'Estado del usuario actualizado con éxito' });
     } catch (error) {
         res.status(500).send({ error: 'Error al actualizar el estado del usuario' });
+    }
+});
+
+app.post('/new-request', async (req, res) => {
+    const { name, last_name, email } = req.body;
+
+    if (!name || !last_name || !email) {
+        return res.status(400).send({ error: 'Faltan datos para la solicitud' });
+    }
+
+    try {
+        // Inserta la solicitud en la base de datos
+        const [results] = await pool.query('INSERT INTO requests (name, last_name, email, request_date) VALUES (?, ?, ?, NOW())', [name, last_name, email]);
+
+        // Envía una respuesta exitosa
+        res.send({ success: true, requestId: results.insertId });
+    } catch (error) {
+        // Maneja el error y envía una respuesta de error
+        console.error('Error procesando solicitud', error);
+        res.status(500).send({ error: 'Error procesando solicitud' });
     }
 });
 
