@@ -96,9 +96,9 @@ app.patch('/update-request-status', async (req, res) => {
 });
 
 app.post('/add-user', async (req, res) => {
-    const { email, password, url_img, name, last_name, phone, role } = req.body;
+    const { email, password, url_img, name, last_name, phone, role, status } = req.body;
 
-    if (!email || !password || !name || !last_name || !phone || !role) {
+    if (!email || !password || !name || !last_name || !phone || !role || !status) {
         return res.status(400).send({ error: 'Faltan datos para el registro.' });
     }
 
