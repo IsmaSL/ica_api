@@ -86,7 +86,7 @@ app.patch('/update-request-status', async (req, res) => {
 
     try {
         await pool.query(
-            'UPDATE request SET status = ? WHERE email = ?',
+            'UPDATE requests SET status = ? WHERE email = ?',
             [newStatus, email]
         );
         res.status(200).send({ message: 'Estado de la solicitud actualizado con éxito' });
