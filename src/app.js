@@ -80,7 +80,7 @@ app.get('/all-requests', async (req, res) => {
 app.patch('/update-request-status', async (req, res) => {
     const { email, newStatus } = req.body;
 
-    if (!email || newStatus === undefined) {
+    if (!email || !newStatus) {
         return res.status(400).send({ error: 'Faltan datos para actualizar el estado de la solicitud.' });
     }
 
@@ -99,7 +99,7 @@ app.post('/add-user', async (req, res) => {
     const { email, password, url_img, name, last_name, phone, role } = req.body;
 
     if (!email || !password || !name || !last_name || !phone || !role) {
-        return res.status(400).send({ error: 'Faltan datos para el registro.', data: req.body });
+        return res.status(400).send({ error: 'Faltan datos para el registro.'});
     }
 
     // Encriptar la contraseña
