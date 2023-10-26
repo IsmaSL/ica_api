@@ -89,9 +89,9 @@ app.patch('/update-request-status', async (req, res) => {
             'UPDATE requests SET status = ? WHERE email = ?',
             [newStatus, email]
         );
-        res.status(200).send({ message: 'Estado de la solicitud actualizado con éxito' });
+        res.status(200).send({ success: true, message: 'Estado de la solicitud actualizado con éxito' });
     } catch (error) {
-        res.status(500).send({ error: 'Error al actualizar estado de la solicitud' });
+        res.status(500).send({ success: false, error: 'Error al actualizar estado de la solicitud' });
     }
 });
 
